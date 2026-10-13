@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#080b16" />
+    <meta name="description" content="Vesper — un jeu d'arcade cosmique. Récupère les fragments de l'aube et esquive les météores." />
+    <title>Vesper — Les fragments de l’aube</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./game.js" defer></script>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="Vesper, accueil">
+          <span class="brand-mark" aria-hidden="true"><span></span></span>
+          <span class="brand-name">vesper<span class="brand-period">.</span></span>
+          <span class="brand-edition">ARCADE NO. 01</span>
+        </a>
+        <div class="topbar-actions">
+          <span class="status-pill"><span class="status-dot"></span> ARCADE COSMIQUE</span>
+          <button class="sound-button" id="soundButton" type="button" aria-pressed="true" aria-label="Désactiver les sons">
+            <svg class="sound-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M11 5 6 9H3v6h3l5 4V5Z" />
+              <path class="sound-wave" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />
+            </svg>
+            <span id="soundLabel">SON : ON</span>
+          </button>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="intro" aria-labelledby="page-title">
+          <div class="intro-copy">
+            <p class="eyebrow"><span class="eyebrow-line"></span> UN PETIT VOYAGE DANS LE NOIR</p>
+            <h1 id="page-title">Les fragments<br /><span>de l’aube.</span></h1>
+            <p class="intro-text">Le ciel s’éteint, les étoiles tombent. Rallume la nuit, un éclat à la fois.</p>
+          </div>
+          <div class="intro-side-note" aria-hidden="true">
+            <span class="side-note-orbit"><span></span></span>
+            <span>UN JEU DE<br />RÉFLEXES &amp; DE LUMIÈRE</span>
+          </div>
+        </section>
+
+        <section class="game-layout" aria-label="Jeu Vesper">
+          <div class="game-column">
+            <div class="game-toolbar">
+              <div class="zone-label"><span class="zone-dot"></span><span>SECTEUR <strong>VESPER-09</strong></span></div>
+              <button id="pauseButton" class="pause-button" type="button" disabled aria-label="Mettre le jeu en pause">
+                <span class="pause-glyph" aria-hidden="true">Ⅱ</span><span id="pauseLabel">PAUSE</span>
+              </button>
+            </div>
+
+            <div class="game-screen" id="gameScreen">
+              <canvas id="gameCanvas" aria-label="Zone de jeu. Déplace-toi avec les flèches ou ZQSD pour ramasser les fragments et éviter les météores."></canvas>
+
+              <div class="game-hud" aria-label="Statistiques de la partie">
+                <div class="hud-stat">
+                  <span class="hud-label">SCORE</span>
+                  <strong id="scoreValue">0000</strong>
+                </div>
+                <div class="hud-stat hud-timer">
+                  <span class="hud-label">CYCLE</span>
+                  <strong id="timerValue">01:00</strong>
+                </div>
+                <div class="hud-stat hud-fragments">
+                  <span class="hud-label">ÉCLATS</span>
+                  <strong><span id="fragmentValue">0</span><span class="hud-divider"> / </span>12</strong>
+                </div>
+                <div class="hud-lives" aria-label="3 vies restantes">
+                  <span class="hud-label">COQUE</span>
+                  <div class="hearts" id="heartDisplay" aria-hidden="true">
+                    <span class="heart">♥</span><span class="heart">♥</span><span class="heart">♥</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="game-overlay" id="gameOverlay" aria-live="polite">
+                <div class="overlay-card">
+                  <div class="overlay-emblem" aria-hidden="true">
+                    <span class="emblem-orbit orbit-one"></span>
+                    <span class="emblem-orbit orbit-two"></span>
+                    <span class="emblem-core"></span>
+                  </div>
+                  <p class="overlay-kicker" id="overlayKicker">PRÊT·E À DÉCOLLER</p>
+                  <h2 id="overlayTitle">La nuit t’attend.</h2>
+                  <p class="overlay-copy" id="overlayCopy">Récupère 12 éclats avant la fin du cycle. Trois impacts, et la mission s’arrête.</p>
+                  <button class="start-button" id="startButton" type="button">
+                    <span id="startLabel">Lancer une partie</span>
+                    <span class="button-arrow" aria-hidden="true">↗</span>
+                  </button>
+                  <p class="overlay-hint" id="overlayHint">ou appuie sur <kbd>Entrée</kbd></p>
+                </div>
+              </div>
+
+              <div class="countdown" id="countdown" aria-live="assertive" aria-hidden="true"></div>
+              <button class="touch-dash" id="touchDashButton" type="button" aria-label="Activer l’impulsion lumineuse" disabled>
+                <span class="touch-dash-sigil" aria-hidden="true">✦</span>
+                <span class="touch-dash-label">IMPULSION</span>
+              </button>
+              <div class="screen-vignette" aria-hidden="true"></div>
+            </div>
+
+            <div class="game-footnote">
+              <span class="footnote-live"><span></span> <span id="gameStatus">EN ATTENTE DU PILOTE</span></span>
+              <span class="footnote-tip">Astuce : garde ton <kbd>ESPACE</kbd> pour les urgences.</span>
+            </div>
+          </div>
+
+          <aside class="mission-panel" aria-labelledby="mission-title">
+            <div class="panel-topline"><span>BRIEFING DE MISSION</span><span class="panel-index">09 / 01</span></div>
+            <div class="panel-rule"></div>
+            <div class="mission-heading">
+              <span class="mission-symbol" aria-hidden="true">✳</span>
+              <div>
+                <p class="mission-label">OBJECTIF PRINCIPAL</p>
+                <h2 id="mission-title">Rallumer<br />l’horizon</h2>
+              </div>
+            </div>
+            <p class="mission-copy">Les fragments sont dispersés dans le secteur. Ramasse-les, mais ne laisse pas les météores toucher ta coque.</p>
+
+            <div class="mission-progress-block">
+              <div class="progress-caption"><span>PROGRESSION</span><strong id="progressText">0 <span>/ 12</span></strong></div>
+              <div class="progress-track" role="progressbar" aria-label="Fragments récupérés" aria-valuemin="0" aria-valuemax="12" aria-valuenow="0" id="progressBar">
+                <span id="progressFill"></span>
+              </div>
+            </div>
+
+            <div class="mission-stats">
+              <div class="mission-stat-row"><span>Temps disponible</span><strong>60 sec</strong></div>
+              <div class="mission-stat-row"><span>Impacts autorisés</span><strong>03</strong></div>
+              <div class="mission-stat-row"><span>Meilleur score</span><strong id="bestScore">0000</strong></div>
+            </div>
+
+            <div class="panel-divider"></div>
+            <div class="controls-heading"><span class="control-orbit" aria-hidden="true">⌘</span><span>COMMANDES DE VOL</span></div>
+            <div class="control-row">
+              <span class="control-keys"><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd></span>
+              <span>ou ZQSD pour bouger</span>
+            </div>
+            <div class="control-row">
+              <span class="control-keys"><kbd>ESPACE</kbd></span>
+              <span>impulsion lumineuse</span>
+            </div>
+            <div class="control-row">
+              <span class="control-keys"><kbd>ÉCHAP</kbd></span>
+              <span>mettre en pause</span>
+            </div>
+            <p class="touch-note"><span aria-hidden="true">✦</span> Sur écran tactile, glisse ton doigt pour piloter.</p>
+          </aside>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <span>VESPER <span class="footer-star">✳</span> FAIT POUR LES NUITS TROP COURTES</span>
+        <span id="footerVersion">ÉDITION ARCADE · 2026</span>
+      </footer>
+    </div>
+  </body>
+</html>
